@@ -56,73 +56,77 @@ driver_path = "C:\\driver\\chromedriver.exe"
 thread1 = threading.Thread(target = show_image)
 thread1.start()
 
-while True:
-  r = sr.Recognizer()
-  '''
-  start = time.process_time()
-  with sr.Microphone() as input:
-    r.adjust_for_ambient_noise(input)
-    print("録音中:")
-    audio = r.listen(input)
-    end = time.process_time()
-    if int(end-start) >= 10:
-        continue
-    '''
-  '''
-  try:
-  '''
-    #text = r.recognize_google(audio, language='ja-JP')
-  keyword = '鉛筆'
-  print(keyword)
+
+r = sr.Recognizer()
+ 
   
-    #url = 'https://www.amazon.co.jp/s?k='+text+'&__mk_ja_JP=カタカナ'
-    #requests.get(url)
-  options = webdriver.ChromeOptions()
-  options.add_experimental_option('excludeSwitches', ['enable-logging'])
-  browser = webdriver.Chrome(options=options)
-  browser.get("http://www.amazon.co.jp/")
-    # 検索フォームが表示されるまで10秒待つ
-  element = WebDriverWait(browser, 10).until(EC.presence_of_element_located((By.NAME, "field-keywords")))
+#url = 'https://www.amazon.co.jp/s?k='+text+'&__mk_ja_JP=カタカナ'
+#requests.get(url)
+options = webdriver.ChromeOptions()
+options.add_experimental_option('excludeSwitches', ['enable-logging'])
+browser = webdriver.Chrome(options=options)
+browser.get("http://www.amazon.co.jp/")
+# 検索フォームが表示されるまで10秒待つ
+element = WebDriverWait(browser, 10).until(EC.presence_of_element_located((By.NAME, "field-keywords")))
 
-    # 検索フォームのテキストをクリア
-  #browser.find_element_by_name("field-keywords").clear()
+# 検索フォームのテキストをクリア
+#browser.find_element_by_name("field-keywords").clear()
+while True:
+    start = time.process_time()
+    with sr.Microphone() as input:
+        r.adjust_for_ambient_noise(input)
+        print("録音中:")
+        audio = r.listen(input)
+        end = time.process_time()
+        if int(end-start) >= 10:
+            continue
+    try:
+        text = r.recognize_google(audio, language='ja-JP')
+        print(text)
+        keyword = text
+        print(keyword)
+        break
+    except:
+        print("認識できませんでした")
+# 検索フォームにキーワードを入力
+element.send_keys(keyword)
 
-    # 検索フォームにキーワードを入力
-  element.send_keys(keyword)
+# 検索実行
+element.send_keys(Keys.RETURN)
 
-    # 検索実行
-  element.send_keys(Keys.RETURN)
+link = browser.current_url
+print(link)
+linkjp = urllib.parse.unquote(link, 'UTF-8')
+print(linkjp)
+html = requests.get(link)
+# ライブラリ'BeautifulSoup'を使って中のデータに自由にアクセスできるようにします。
+soup = BeautifulSoup(html.content, 'html.parser') 
+cats = soup.select("div#departments > ul > li")
+idlist = []
+for cat in cats:
+  idlist.append(cat.get('id'))
+print(idlist)
+time.sleep(5)  # Let the user actually see something!
 
-  link = browser.current_url
-  print(link)
-  linkjp = urllib.parse.unquote(link, 'UTF-8')
-  print(linkjp)
-  html = requests.get(link)
-  # ライブラリ'BeautifulSoup'を使って中のデータに自由にアクセスできるようにします。
-  soup = BeautifulSoup(html.content, 'html.parser') 
-  cats = soup.select("div#departments > ul > li")
-  print(cats)
-  for cat in cats:
-    print(cat.get('id'))
-
-  time.sleep(5)  # Let the user actually see something!
-  break
-
-
-
-  '''
-    if text == "こんにちは":
-      img = Image.open('image1.png')
-      img= ImageTk.PhotoImage(img)
-      canvas.itemconfig(item,image=img)
-    elif text == "おはよう":
-      img = Image.open('image2.png')
-      img= ImageTk.PhotoImage(img)
-      canvas.itemconfig(item,image=img)
-    elif text == "こんばんは":
-      img = Image.open('image3.png')
-      img= ImageTk.PhotoImage(img)
-      canvas.itemconfig(item,image=img)
-  except:
-    print("認識できませんでした")
-  '''
+while True:
+    start = time.process_time()
+    with sr.Microphone() as input:
+        r.adjust_for_ambient_noise(input)
+        print("録音中:")
+        audio = r.listen(input)
+        end = time.process_time()
+        if int(end-start) >= 10:
+            continue
+    try:
+        text = r.recognize_google(audio, language='ja-JP')
+        print(text)
+        if text == "シャーペン":
+          img = Image.open('image1.png')
+          img= ImageTk.PhotoImage(img)
+          canvas.itemconfig(item,image=img)
+        elif text == "鉛筆" or text == "えんぴつ":
+          img = Image.open('image2.png')
+          img= ImageTk.PhotoImage(img)
+          canvas.itemconfig(item,image=img)
+    except:
+        print("認識できませんでした")
