@@ -94,16 +94,17 @@ while True:
   element.send_keys(Keys.RETURN)
 
   link = browser.current_url
-  #print(link)
-  #print(urllib.parse.unquote(link, 'UTF-8'))
+  print(link)
+  linkjp = urllib.parse.unquote(link, 'UTF-8')
+  print(linkjp)
   html = requests.get(link)
-  soup = BeautifulSoup(html.content, "html.parser") 
-  #print(soup)
-  #document.querySelector("#departments > ul")
+  # ライブラリ'BeautifulSoup'を使って中のデータに自由にアクセスできるようにします。
+  soup = BeautifulSoup(html.content, 'html.parser') 
   cats = soup.select("div#departments > ul > li")
   print(cats)
   for cat in cats:
-      print(cat.get('id'))
+    print(cat.get('id'))
+
   time.sleep(5)  # Let the user actually see something!
   break
 
